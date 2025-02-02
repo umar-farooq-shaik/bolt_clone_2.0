@@ -3,7 +3,7 @@ import { mutation } from "./_generated/server";
 
 export const CreateWorkspace=mutation({
     args:{
-        messgaes:v.any(),
+        messages:v.any(),
         user:v.id('users')
     },
     handler:async(ctx,args)=>{
