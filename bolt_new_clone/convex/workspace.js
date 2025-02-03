@@ -1,9 +1,9 @@
-import {v} from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
+import {v} from 'convex/values';
 
-export const CreateWorkspace=mutation({
+export const CreateWorkspace = mutation({
     args:{
-        messgaes:v.any(),
+        messages:v.any(),
         user:v.id('users')
     },
     handler:async(ctx,args)=>{
@@ -13,4 +13,24 @@ export const CreateWorkspace=mutation({
         });
         return workspaceId;
     }
-})
+});
+
+export const GetWorkspace=query({
+    args:{
+        workspaceId:v.id('workspace')
+    },
+    handler:async(ctx,args)=>{
+        const result=await ctx.db.get(args.workspaceId);
+        return result;
+    }
+});
+
+export const GetWorkspaceData = query({
+    args: {
+      workspaceId: v.id('workspace')
+    },
+    handler: async (ctx, args) => {
+      const workspace = await ctx.db.get(args.workspaceId);
+      return { messages: workspace.messages };
+    }
+  });
