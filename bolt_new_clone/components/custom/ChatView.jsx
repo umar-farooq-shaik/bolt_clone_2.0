@@ -7,7 +7,7 @@ import Lookup from '@/data/Lookup';
 import Prompt from '@/data/Prompt';
 import axios from 'axios';
 import { useConvex } from 'convex/react';
-import { ArrowRight, Link } from 'lucide-react';
+import { ArrowRight, Link, Loader2Icon } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation'
 import React, { useContext, useEffect, useState } from 'react'
@@ -18,6 +18,8 @@ function ChatView() {
   const {messages, setMessages} = useContext(MessagesContext);
   const {userDetail,setUserDetail} = useContext(UserDetailContext); 
   const [userInput,setUserInput]=useState();
+  const[loading,setLoading]=useState(false);
+  
   useEffect(() => {
     id && GetWorkspaceData();
   }, [id]);
@@ -44,6 +46,7 @@ function ChatView() {
   },[messages])
   
   const GetAiResponse=async()=>{
+    setLoading(true);
       const PROMPT = JSON.stringify(messages)+Prompt.CHAT_PROMPT;
       const result=await axios.post('/api/ai-chat',{
         prompt:PROMPT
@@ -53,17 +56,25 @@ function ChatView() {
         role:'ai',
         content:result.data.result
       }])
+      setLoading(false);
   }
 
 
+  const onGenerate=(input)=>{
+    setMessages(prev=>[...prev,{
+      role:'user',
+      content:input
+    }])
+  }
+
   return (
     <div className='relative h-[85vh] flex flex-col'>
-     <div className='flex-1 overflow-y-scroll '>
+     <div className='flex-1 overflow-y-scroll scrollbar-hide'>
   {messages?.length ? (
     messages.map((msg, index) => (
       <div
         key={index}
-        className="p-3 rounded-lg mb-2 flex gap-2 items-start"
+        className="p-3 rounded-lg mb-2 flex gap-2 items-center leading-7"
         style={{ backgroundColor: Colors.CHAT_BACKGROUND }}
       >
         {msg?.role === "user" && userDetail?.picture && (
@@ -81,6 +92,12 @@ function ChatView() {
   ) : (
     <p className="text-center text-gray-500">No messages available.</p>
   )}
+  {loading && <div className="p-3 rounded-lg mb-2 flex gap-2 items-center"
+  style={{ backgroundColor: Colors.CHAT_BACKGROUND }}>
+          <Loader2Icon className='animate-spin'/>
+          <h2>Generating response...</h2>
+    </div>
+}
 </div>
 
     {<div className='p-5 border rounded-xl max-w-xl w-full mt-3'
