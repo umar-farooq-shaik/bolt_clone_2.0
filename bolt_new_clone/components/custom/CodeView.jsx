@@ -11,7 +11,7 @@ import Lookup from '@/data/Lookup';
 import axios from 'axios';
 import { MessagesContext } from '@/context/MessagesContext';
 import Prompt from '@/data/Prompt';
-import { useMutation } from 'convex/react';
+import { useConvex, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useParams } from 'next/navigation';
 
@@ -21,6 +21,19 @@ function CodeView() {
   const[files,setFiles]=useState(Lookup?.DEFAULT_FILE)
   const {messages,setMessages}=useContext(MessagesContext);
   const UpdateFiles=useMutation(api.workspace.UpdateFiles)
+  const convex=useConvex();
+
+  useEffect(()=>{
+    id&&GetFiles();
+  },[id])
+
+  const GetFiles=async()=>{
+    const result=await convex.query(api.workspace.GetWorkspace,{
+      workspaceId:id
+    });
+    const mergedFiles={...Lookup.DEFAULT_FILE,...result?.fileData}
+    setFiles(mergedFiles);
+  }
 
   useEffect(()=>{
       if(messages?.length>0)
