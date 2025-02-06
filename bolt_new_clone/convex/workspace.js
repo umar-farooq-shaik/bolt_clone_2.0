@@ -48,3 +48,18 @@ export const UpdateMessages=mutation({
     }
 
 })
+
+export const UpdateFiles=mutation({
+    args:{
+        workspaceId:v.id('workspace'),
+        files:v.any()
+    },
+    handler:async(ctx,args)=>{
+        const result=await ctx.db.patch(args.workspaceId,{
+            fileData:args.files
+        });
+        return result
+    }
+
+})
+
