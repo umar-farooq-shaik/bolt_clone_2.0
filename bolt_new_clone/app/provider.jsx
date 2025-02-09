@@ -9,6 +9,7 @@ import { useConvex } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AppSideBar from '@/components/custom/AppSideBar';
+import { useRouter } from 'next/router';
 
 function Provider({ children }) {
   const [messages, setMessages] = useState();
