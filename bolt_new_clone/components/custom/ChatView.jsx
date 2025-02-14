@@ -26,7 +26,6 @@ function ChatView() {
   const [userInput, setUserInput] = useState();
   const [loading, setLoading] = useState(false);
   const UpdateMessages = useMutation(api.workspace.UpdateMessages);
-  const { toggleSidebar } = useSidebar();
   const UpdateTokens=useMutation(api.users.UpdateToken);
   useEffect(() => {
     id && GetWorkspaceData();
@@ -73,6 +72,10 @@ function ChatView() {
     });
     
     const token =Number(userDetail?.token)-Number(countToken(JSON.stringify(aiResp)));
+    setUserDetail(prev=>({
+      ...prev,
+      token:token
+    }))
     // update token to database
     await UpdateTokens({
       userId:userDetail?._id,
@@ -82,13 +85,17 @@ function ChatView() {
   };
 
   const onGenerate = async (input) => {
+    if(userDetail?.token<10){
+        toast('You do not have enough token!');
+          return ;
+    }
     setMessages(prev => [...prev, { role: 'user', content: input }]);
     setUserInput(''); // Clear input after sending message
   };
 
   return (
     <div className="relative h-[83vh] flex flex-col">
-      <div className="flex-1 overflow-y-scroll scrollbar-hide pl-10">
+      <div className="flex-1 overflow-y-scroll scrollbar-hide pl-1">
         {messages?.length > 0 && messages?.map((msg, index) => (
           <div
             key={index}
@@ -126,16 +133,6 @@ function ChatView() {
 
       {/* Input Section */}
       <div className="flex gap-2 items-end ">
-        {userDetail && (
-          <Image
-            onClick={toggleSidebar}
-            src={userDetail?.picture}
-            alt="userImage"
-            width={30}
-            height={30}
-            className="rounded-full cursor-pointer"
-          />
-        )}
         <div
           className="p-5 border rounded-xl max-w-2xl w-full mt-3"
           style={{
@@ -155,9 +152,6 @@ function ChatView() {
                 className="bg-blue-500 p-2 w-10 h-10 rounded-md cursor-pointer"
               />
             )}
-          </div>
-          <div>
-            <Link className="h-5 w-5" />
           </div>
         </div>
       </div>

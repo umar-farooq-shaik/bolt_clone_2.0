@@ -9,13 +9,17 @@ import { useConvex } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AppSideBar from '@/components/custom/AppSideBar';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
+import {PayPalScriptProvider} from '@paypal/react-paypal-js'
+import { ActionContext } from '@/context/ActionContext';
+
 
 function Provider({ children }) {
   const [messages, setMessages] = useState();
   const [userDetail, setUserDetail] = useState();
   const convex = useConvex();
-
+  const [action,setAction]=useState();
+  const router = useRouter(); 
   useEffect(() => {
     IsAuthenticated();
   }, []);
@@ -37,11 +41,11 @@ function Provider({ children }) {
 
   return (
     <div>
-      <GoogleOAuthProvider
-        clientId={process.env.NEXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID_KEY}
-      >
+      <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID_KEY}>
+        <PayPalScriptProvider options={{clientId:process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}}>
           <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
             <MessagesContext.Provider value={{ messages, setMessages }}>
+              <ActionContext.Provider value={{action,setAction}}>
             
                 <NextThemesProvider
                   attribute="class"
@@ -57,9 +61,10 @@ function Provider({ children }) {
                     </main>
                   </SidebarProvider>
                 </NextThemesProvider>
-             
+                </ActionContext.Provider>
             </MessagesContext.Provider>
           </UserDetailContext.Provider>
+          </PayPalScriptProvider>
       </GoogleOAuthProvider>
     </div>
   );

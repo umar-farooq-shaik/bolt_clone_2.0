@@ -1,4 +1,5 @@
 "use client"
+import '@/app/globals.css';
 import { MessagesContext } from '@/context/MessagesContext' 
 import { UserDetailContext } from '../../context/UserDetailContext';
 import Colors from '@/data/Colors'
@@ -24,6 +25,10 @@ function Hero() {
         setOpenDialog(true);
         return; 
       }
+      if(userDetail?.token<10){
+        toast('You do not have enough token!');
+          return ;
+    }
       const msg={
         role:'user',
         content:input
@@ -50,14 +55,11 @@ function Hero() {
         <div className='flex gap-2'>
           <textarea placeholder={Lookup.INPUT_PLACEHOLDER}
           onChange={(event)=>setUserInput(event.target.value)}
-          className='outline-none bg-transparent w-full h-32 max-h-56 resize-none'
+          className='outline-none bg-transparent w-full h-32 max-h-56 resize-none '
           /> 
          {userInput && <ArrowRight 
          onClick={()=>onGenerate(userInput)}
          className='bg-blue-500 p-2 h-10 w-10 rounded-md cursor-pointer' />}
-        </div>
-        <div>
-        <Link className='h-5 w-5'/>
         </div>
       </div>
 
@@ -77,3 +79,5 @@ function Hero() {
 }
 
 export default Hero
+
+

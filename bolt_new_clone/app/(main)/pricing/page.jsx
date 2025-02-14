@@ -8,8 +8,8 @@ import React, { useContext } from 'react';
 function Pricing() {
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
   return (
-    <div className="mt-10 flex flex-col items-center w-full p-10 md:px-32 lg:px-48 ">
-      <h2 className="font-bold text-5xl">pricing</h2>
+    <div className="mt-2 flex flex-col items-center w-full p-10 md:px-32 lg:px-48 ">
+      <h2 className="font-bold text-5xl">Pricing</h2>
       <p className="text-gray-400 max-w-xl text-center mt-4">
         {Lookup.PRICING_DESC}
       </p>

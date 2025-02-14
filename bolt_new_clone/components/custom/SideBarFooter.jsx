@@ -27,17 +27,19 @@ function SideBarFooter() {
   ];
   const onOptionClock = (option) => {
     console.log(option);
-    router.push(option.path);
+    if (option.path) {
+      router.push(option.path);
+    }
   };
 
   return (
-    <div className="p-2 mb-10">
+    <div className="mb-2">
       {options.map((option, index) => (
         <Button
           onClick={() => onOptionClock(option)}
           key={index}
           variant="ghost"
-          className="w-full flex justify-start my-3"
+          className="w-full flex justify-start"
         >
           <option.icon />
           {option.name}

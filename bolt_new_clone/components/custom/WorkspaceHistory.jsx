@@ -4,7 +4,7 @@ import { api } from '@/convex/_generated/api';
 import { useConvex } from 'convex/react';
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react';
-import { useSidebar } from '../ui/sidebar';
+import { useSidebar } from '@/components/ui/sidebar';
 
 function WorkspaceHistory() {
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
