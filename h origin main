@@ -1,0 +1,1222 @@
+[33mcommit d3cde2c82cfcdf19fccd9ef346e0828d3948095d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: umar-farooq-shaik <umarfarooqshaik645@gmail.com>
+Date:   Fri Feb 14 16:37:24 2025 +0530
+
+    snapsite done
+
+[1mdiff --git a/bolt_new_clone/app/(main)/pricing/page.jsx b/bolt_new_clone/app/(main)/pricing/page.jsx[m
+[1mindex 0021135..2b943f4 100644[m
+[1m--- a/bolt_new_clone/app/(main)/pricing/page.jsx[m
+[1m+++ b/bolt_new_clone/app/(main)/pricing/page.jsx[m
+[36m@@ -8,8 +8,8 @@[m [mimport React, { useContext } from 'react';[m
+ function Pricing() {[m
+   const { userDetail, setUserDetail } = useContext(UserDetailContext);[m
+   return ([m
+[31m-    <div className="mt-10 flex flex-col items-center w-full p-10 md:px-32 lg:px-48 ">[m
+[31m-      <h2 className="font-bold text-5xl">pricing</h2>[m
+[32m+[m[32m    <div className="mt-2 flex flex-col items-center w-full p-10 md:px-32 lg:px-48 ">[m
+[32m+[m[32m      <h2 className="font-bold text-5xl">Pricing</h2>[m
+       <p className="text-gray-400 max-w-xl text-center mt-4">[m
+         {Lookup.PRICING_DESC}[m
+       </p>[m
+[1mdiff --git a/bolt_new_clone/app/(main)/workspace/[id]/page.jsx b/bolt_new_clone/app/(main)/workspace/[id]/page.jsx[m
+[1mindex 308befe..00b00a2 100644[m
+[1m--- a/bolt_new_clone/app/(main)/workspace/[id]/page.jsx[m
+[1m+++ b/bolt_new_clone/app/(main)/workspace/[id]/page.jsx[m
+[36m@@ -4,7 +4,7 @@[m [mimport CodeView from '@/components/custom/CodeView'[m
+ function Workspace() {[m
+   return ([m
+     <div className='p-3 pr-5 mt-3'>[m
+[31m-      <div className='grid grid-cols-1 md:grid-cols-4 gap-10'>[m
+[32m+[m[32m      <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>[m
+         <ChatView/>[m
+         <div className='col-span-3'>[m
+         <CodeView/>[m
+[1mdiff --git a/bolt_new_clone/app/layout.js b/bolt_new_clone/app/layout.js[m
+[1mindex 5b00421..23cdec4 100644[m
+[1m--- a/bolt_new_clone/app/layout.js[m
+[1m+++ b/bolt_new_clone/app/layout.js[m
+[36m@@ -2,6 +2,7 @@[m [mimport { Geist, Geist_Mono } from "next/font/google";[m
+ import "./globals.css";[m
+ import Provider from "./provider";[m
+ import ConvexClientProvider from "./ConvexClientProvider";[m
+[32m+[m[32mimport { Toaster } from "sonner";[m
+ [m
+ [m
+ [m
+[36m@@ -19,6 +20,7 @@[m [mexport default function RootLayout({ children }) {[m
+         <ConvexClientProvider>[m
+         <Provider>[m
+         {children}[m
+[32m+[m[32m        <Toaster/>[m
+         </Provider>[m
+         </ConvexClientProvider>[m
+       </body>[m
+[1mdiff --git a/bolt_new_clone/app/provider.jsx b/bolt_new_clone/app/provider.jsx[m
+[1mindex 898c6a4..f6179b8 100644[m
+[1m--- a/bolt_new_clone/app/provider.jsx[m
+[1m+++ b/bolt_new_clone/app/provider.jsx[m
+[36m@@ -9,13 +9,17 @@[m [mimport { useConvex } from 'convex/react';[m
+ import { api } from '@/convex/_generated/api';[m
+ import { SidebarProvider } from '@/components/ui/sidebar';[m
+ import AppSideBar from '@/components/custom/AppSideBar';[m
+[31m-import { useRouter } from 'next/router';[m
+[32m+[m[32mimport { useRouter } from 'next/navigation';[m
+[32m+[m[32mimport {PayPalScriptProvider} from '@paypal/react-paypal-js'[m
+[32m+[m[32mimport { ActionContext } from '@/context/ActionContext';[m
+[32m+[m
+ [m
+ function Provider({ children }) {[m
+   const [messages, setMessages] = useState();[m
+   const [userDetail, setUserDetail] = useState();[m
+   const convex = useConvex();[m
+[31m-[m
+[32m+[m[32m  const [action,setAction]=useState();[m
+[32m+[m[32m  const router = useRouter();[m[41m [m
+   useEffect(() => {[m
+     IsAuthenticated();[m
+   }, []);[m
+[36m@@ -37,11 +41,11 @@[m [mfunction Provider({ children }) {[m
+ [m
+   return ([m
+     <div>[m
+[31m-      <GoogleOAuthProvider[m
+[31m-        clientId={process.env.NEXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID_KEY}[m
+[31m-      >[m
+[32m+[m[32m      <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID_KEY}>[m
+[32m+[m[32m        <PayPalScriptProvider options={{clientId:process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}}>[m
+           <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>[m
+             <MessagesContext.Provider value={{ messages, setMessages }}>[m
+[32m+[m[32m              <ActionContext.Provider value={{action,setAction}}>[m
+             [m
+                 <NextThemesProvider[m
+                   attribute="class"[m
+[36m@@ -57,9 +61,10 @@[m [mfunction Provider({ children }) {[m
+                     </main>[m
+                   </SidebarProvider>[m
+                 </NextThemesProvider>[m
+[31m-             [m
+[32m+[m[32m                </ActionContext.Provider>[m
+             </MessagesContext.Provider>[m
+           </UserDetailContext.Provider>[m
+[32m+[m[32m          </PayPalScriptProvider>[m
+       </GoogleOAuthProvider>[m
+     </div>[m
+   );[m
+[1mdiff --git a/bolt_new_clone/components/custom/AppSideBar.jsx b/bolt_new_clone/components/custom/AppSideBar.jsx[m
+[1mindex 21d2c3a..036ccaa 100644[m
+[1m--- a/bolt_new_clone/components/custom/AppSideBar.jsx[m
+[1m+++ b/bolt_new_clone/components/custom/AppSideBar.jsx[m
+[36m@@ -8,17 +8,27 @@[m [mimport {[m
+ } from '@/components/ui/sidebar';[m
+ import Image from 'next/image';[m
+ import { Button } from '../ui/button';[m
+[31m-import { MessageCircleCodeIcon } from 'lucide-react';[m
+[32m+[m[32mimport { MessageCircleCodeIcon, PanelRightOpen } from 'lucide-react';[m
+ import WorkspaceHistory from './WorkspaceHistory';[m
+ import SideBarFooter from './SideBarFooter';[m
+[32m+[m[32mimport Link from 'next/link';[m
+ [m
+ function AppSideBar() {[m
+   return ([m
+     [m
+       <Sidebar>[m
+         <SidebarHeader className="p-5">[m
+[31m-            <Image src={'/logo.png'} alt="logo" width={30} height={30} />[m
+[31m-            <Button className="mt-5"><MessageCircleCodeIcon /> Start New Chat</Button>[m
+[32m+[m[41m          [m
+[32m+[m[32m             {/* Logo and SnapSite text together */}[m
+[32m+[m[32m       <Link href={'/'} className="flex items-center gap-1">[m
+[32m+[m[32m        <div className="w-[40px] h-[40px] overflow-hidden rounded-full">[m
+[32m+[m[32m          <Image src="/logo2.png" alt="logo" width={40} height={40} />[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m        <div className="font-bold text-3xl">SnapSite</div>[m
+[32m+[m[32m      </Link>[m
+[32m+[m[32m            <Link href={'/'}>[m
+[32m+[m[32m            <Button className="mt-5 ml-5"><MessageCircleCodeIcon /> Start New Chat</Button>[m
+[32m+[m[32m        </Link>[m
+         </SidebarHeader>[m
+         <SidebarContent className="">[m
+           <SidebarGroup>[m
+[1mdiff --git a/bolt_new_clone/components/custom/ChatView.jsx b/bolt_new_clone/components/custom/ChatView.jsx[m
+[1mindex dc9f9c3..f5116a9 100644[m
+[1m--- a/bolt_new_clone/components/custom/ChatView.jsx[m
+[1m+++ b/bolt_new_clone/components/custom/ChatView.jsx[m
+[36m@@ -26,7 +26,6 @@[m [mfunction ChatView() {[m
+   const [userInput, setUserInput] = useState();[m
+   const [loading, setLoading] = useState(false);[m
+   const UpdateMessages = useMutation(api.workspace.UpdateMessages);[m
+[31m-  const { toggleSidebar } = useSidebar();[m
+   const UpdateTokens=useMutation(api.users.UpdateToken);[m
+   useEffect(() => {[m
+     id && GetWorkspaceData();[m
+[36m@@ -73,6 +72,10 @@[m [mfunction ChatView() {[m
+     });[m
+     [m
+     const token =Number(userDetail?.token)-Number(countToken(JSON.stringify(aiResp)));[m
+[32m+[m[32m    setUserDetail(prev=>({[m
+[32m+[m[32m      ...prev,[m
+[32m+[m[32m      token:token[m
+[32m+[m[32m    }))[m
+     // update token to database[m
+     await UpdateTokens({[m
+       userId:userDetail?._id,[m
+[36m@@ -82,13 +85,17 @@[m [mfunction ChatView() {[m
+   };[m
+ [m
+   const onGenerate = async (input) => {[m
+[32m+[m[32m    if(userDetail?.token<10){[m
+[32m+[m[32m        toast('You do not have enough token!');[m
+[32m+[m[32m          return ;[m
+[32m+[m[32m    }[m
+     setMessages(prev => [...prev, { role: 'user', content: input }]);[m
+     setUserInput(''); // Clear input after sending message[m
+   };[m
+ [m
+   return ([m
+     <div className="relative h-[83vh] flex flex-col">[m
+[31m-      <div className="flex-1 overflow-y-scroll scrollbar-hide pl-10">[m
+[32m+[m[32m      <div className="flex-1 overflow-y-scroll scrollbar-hide pl-1">[m
+         {messages?.length > 0 && messages?.map((msg, index) => ([m
+           <div[m
+             key={index}[m
+[36m@@ -126,16 +133,6 @@[m [mfunction ChatView() {[m
+ [m
+       {/* Input Section */}[m
+       <div className="flex gap-2 items-end ">[m
+[31m-        {userDetail && ([m
+[31m-          <Image[m
+[31m-            onClick={toggleSidebar}[m
+[31m-            src={userDetail?.picture}[m
+[31m-            alt="userImage"[m
+[31m-            width={30}[m
+[31m-            height={30}[m
+[31m-            className="rounded-full cursor-pointer"[m
+[31m-          />[m
+[31m-        )}[m
+         <div[m
+           className="p-5 border rounded-xl max-w-2xl w-full mt-3"[m
+           style={{[m
+[36m@@ -156,9 +153,6 @@[m [mfunction ChatView() {[m
+               />[m
+             )}[m
+           </div>[m
+[31m-          <div>[m
+[31m-            <Link className="h-5 w-5" />[m
+[31m-          </div>[m
+         </div>[m
+       </div>[m
+     </div>[m
+[1mdiff --git a/bolt_new_clone/components/custom/CodeView.jsx b/bolt_new_clone/components/custom/CodeView.jsx[m
+[1mindex 211257b..3b26614 100644[m
+[1m--- a/bolt_new_clone/components/custom/CodeView.jsx[m
+[1m+++ b/bolt_new_clone/components/custom/CodeView.jsx[m
+[36m@@ -1,125 +1,152 @@[m
+[31m-"use client"[m
+[31m-import React, { useContext, useEffect, useState } from 'react'[m
+[32m+[m[32m'use client';[m
+[32m+[m[32mimport React, { useContext, useEffect, useState } from 'react';[m
+[32m+[m
+ import {[m
+   SandpackProvider,[m
+   SandpackLayout,[m
+   SandpackCodeEditor,[m
+   SandpackPreview,[m
+   SandpackFileExplorer,[m
+[31m-} from "@codesandbox/sandpack-react";[m
+[32m+[m[32m} from '@codesandbox/sandpack-react';[m
+ import Lookup from '@/data/Lookup';[m
+[31m-import axios from 'axios';[m
+ import { MessagesContext } from '@/context/MessagesContext';[m
+ import Prompt from '@/data/Prompt';[m
+[32m+[m[32mimport axios from 'axios';[m
+ import { useConvex, useMutation } from 'convex/react';[m
+ import { api } from '@/convex/_generated/api';[m
+ import { useParams } from 'next/navigation';[m
+ import { Loader2Icon } from 'lucide-react';[m
+ import { countToken } from './ChatView';[m
+ import { UserDetailContext } from '@/context/UserDetailContext';[m
+[32m+[m[32mimport { toast } from 'sonner';[m
+[32m+[m[32mimport SandpackPreviewClient from './SandpackPreviewClient';[m
+[32m+[m[32mimport { ActionContext } from '@/context/ActionContext';[m
+ [m
+ function CodeView() {[m
+[31m-  const {id}=useParams();[m
+[32m+[m[32m  const { id } = useParams();[m
+[32m+[m[32m  const [activeTab, setActiveTab] = useState('code');[m
+[32m+[m[32m  const [files, setFiles] = useState(Lookup?.DEFAULT_FILE);[m
+[32m+[m[32m  const { messages, setMessages } = useContext(MessagesContext);[m
+[32m+[m[32m  const UpdateFiles = useMutation(api.workspace.UpdateFiles);[m
+   const { userDetail, setUserDetail } = useContext(UserDetailContext);[m
+[31m-  const [activeTab,setActiveTab]=useState('code')[m
+[31m-  const[files,setFiles]=useState(Lookup?.DEFAULT_FILE)[m
+[31m-  const {messages,setMessages}=useContext(MessagesContext);[m
+[31m-  const UpdateFiles=useMutation(api.workspace.UpdateFiles)[m
+[31m-  const convex=useConvex();[m
+[31m-  const [loading,setLoading]=useState(false);[m
+[31m-  const UpdateTokens=useMutation(api.users.UpdateToken);[m
+[31m-  [m
+[31m-  useEffect(()=>{[m
+[31m-    id&&GetFiles();[m
+[31m-  },[id])[m
+[32m+[m[32m  const { action, setAction } = useContext(ActionContext);[m
+[32m+[m
+[32m+[m[32m  useEffect(() => {[m
+[32m+[m[32m    (action?.actionType == 'deploy' || action?.actionType == 'export') &&[m
+[32m+[m[32m      setActiveTab('preview');[m
+[32m+[m[32m  }, [action]);[m
+ [m
+[31m-  const GetFiles=async()=>{[m
+[32m+[m[32m  const convex = useConvex();[m
+[32m+[m[32m  const [loading, setLoading] = useState(false);[m
+[32m+[m[32m  const UpdateToken = useMutation(api.users.UpdateToken);[m
+[32m+[m
+[32m+[m[32m  useEffect(() => {[m
+[32m+[m[32m    id && GetFiles();[m
+[32m+[m[32m  }, [id]);[m
+[32m+[m
+[32m+[m[32m  const GetFiles = async () => {[m
+     setLoading(true);[m
+[31m-    const result=await convex.query(api.workspace.GetWorkspace,{[m
+[31m-      workspaceId:id[m
+[32m+[m[32m    const result = await convex.query(api.workspace.GetWorkspace, {[m
+[32m+[m[32m      workspaceId: id,[m
+     });[m
+[31m-    const mergedFiles={...Lookup.DEFAULT_FILE,...result?.fileData}[m
+[31m-    setFiles(mergedFiles);[m
+[32m+[m[32m    const mergedFils = { ...Lookup.DEFAULT_FILE, ...result?.fileData };[m
+[32m+[m[32m    setFiles(mergedFils);[m
+     setLoading(false);[m
+[31m-  }[m
+[32m+[m[32m  };[m
+[32m+[m
+[32m+[m[32m  useEffect(() => {[m
+[32m+[m[32m    if (messages?.length > 0) {[m
+[32m+[m[32m      console.log(messages);[m
+ [m
+[31m-  useEffect(()=>{[m
+[31m-      if(messages?.length>0)[m
+[31m-        {[m
+[31m-        const role=messages[messages?.length-1].role;[m
+[31m-        if(role=='user'){[m
+[31m-          GenerateAiCode();[m
+[31m-        }[m
+[32m+[m[32m      const role = messages[messages?.length - 1].role;[m
+[32m+[m[32m      if (role == 'user') {[m
+[32m+[m[32m        GenerateAiCode();[m
+       }[m
+[31m-    },[messages])[m
+[31m-    [m
+[31m-  const GenerateAiCode=async()=>{[m
+[32m+[m[32m    }[m
+[32m+[m[32m  }, [messages]);[m
+[32m+[m
+[32m+[m[32m  const GenerateAiCode = async () => {[m
+[32m+[m[32m    if (userDetail?.token < 10) {[m
+[32m+[m[32m      toast("You don't have enough token to generate code");[m
+[32m+[m[32m      return;[m
+[32m+[m[32m    }[m
+[32m+[m[32m    // return;[m
+     setLoading(true);[m
+[31m-    const PROMPT=JSON.stringify(messages)+" "+Prompt.CODE_GEN_PROMPT;[m
+[31m-    const result=await axios.post('/api/gen-ai-code',{[m
+[31m-      prompt:PROMPT[m
+[32m+[m[32m    const PROMPT = JSON.stringify(messages) + ' ' + Prompt.CODE_GEN_PROMPT;[m
+[32m+[m[32m    console.log({ PROMPT });[m
+[32m+[m[32m    const result = await axios.post('/api/gen-ai-code', {[m
+[32m+[m[32m      prompt: PROMPT,[m
+     });[m
+[31m-    console.log(result.data);[m
+[31m-    const aiResp=result.data;[m
+[31m-[m
+[31m-    const mergedFiles={...Lookup.DEFAULT_FILE,...aiResp?.files}[m
+ [m
+[32m+[m[32m    console.log(result?.data);[m
+[32m+[m[32m    const aiResp = result.data;[m
+[32m+[m[32m    const mergedFiles = { ...Lookup.DEFAULT_FILE, ...aiResp?.files };[m
+     setFiles(mergedFiles);[m
+[31m-    [m
+     await UpdateFiles({[m
+[31m-      workspaceId:id,[m
+[31m-      files:aiResp?.files[m
+[32m+[m[32m      workspaceId: id,[m
+[32m+[m[32m      files: aiResp?.files,[m
+     });[m
+[31m-[m
+[31m-    const token =Number(userDetail?.token)-Number(countToken(JSON.stringify(aiResp)));[m
+[31m-    // update token to database[m
+[31m-    await UpdateTokens({[m
+[31m-          userId:userDetail?._id,[m
+[31m-          token:token[m
+[31m-        })[m
+     setLoading(false);[m
+[31m-  }[m
+[31m-  return ([m
+[31m-    <div className='relative'>[m
+[31m-      <div className='bg-[#181818] w-full p-2 border-'>[m
+[31m-        <div className='flex items-center flex-wrap shrink-8[m
+[31m-       bg-black p-1 justify-center rounded-full[m
+[31m-        w-[140px] gap-3'>[m
+[31m-          <h2 onClick={()=>setActiveTab('code')}className={`text-sm cursor-pointer [m
+[31m-            ${activeTab=='code'&&'text-blue-500 bg-blue-500 bg-opacity-25 p-1 px-2 rounded-full'}`}>Code</h2>[m
+[32m+[m[32m    const token =[m
+[32m+[m[32m      Number(userDetail?.token) - Number(countToken(JSON.stringify(aiResp)));[m
+[32m+[m[32m    setUserDetail((prev) => ({ ...prev, token: token }));[m
+[32m+[m[32m    await UpdateToken({[m
+[32m+[m[32m      token: token,[m
+[32m+[m[32m      userId: userDetail?._id,[m
+[32m+[m[32m    });[m
+[32m+[m[32m  };[m
+ [m
+[31m-          <h2 onClick={()=>setActiveTab('preview')}[m
+[31m-          className={`text-sm cursor-pointer ${activeTab=='preview'&&'text-blue-500 bg-blue-500 bg-opacity-25 p-1 px-2 rounded-full'}`}>Preview</h2>[m
+[32m+[m[32m  return ([m
+[32m+[m[32m    <div className="relative">[m
+[32m+[m[32m      <div className="bg-[#181818] w-full p-2 border">[m
+[32m+[m[32m        <div className="flex items-center flex-wrap shrink-0 bg-black p-1 w-[140px] gap-3 justify-center rounded-full">[m
+[32m+[m[32m          <h2[m
+[32m+[m[32m            onClick={() => setActiveTab('code')}[m
+[32m+[m[32m            className={`text-sm cursor-pointer ${activeTab == 'code' && 'text-blue-500 bg-blue-500 bg-opacity-25 p-1 px-2  rounded-full'} `}[m
+[32m+[m[32m          >[m
+[32m+[m[32m            Code[m
+[32m+[m[32m          </h2>[m
+[32m+[m[32m          <h2[m
+[32m+[m[32m            onClick={() => setActiveTab('preview')}[m
+[32m+[m[32m            className={`text-sm cursor-pointer ${activeTab == 'preview' && 'text-blue-500 bg-blue-500 bg-opacity-25 p-1 px-2  rounded-full'} `}[m
+[32m+[m[32m          >[m
+[32m+[m[32m            Preview[m
+[32m+[m[32m          </h2>[m
+         </div>[m
+       </div>[m
+[31m-      <SandpackProvider template="react" theme={'dark'}[m
+[31m-      files={files}[m
+[31m-      customSetup={{[m
+[31m-        dependencies:{[m
+[31m-          ...Lookup.DEPENDANCY[m
+[31m-        }[m
+[31m-      }}[m
+[31m-      options={{[m
+[31m-        externalResources:['https://cdn.tailwindcss.com'][m
+[31m-      }}>[m
+[31m-    <SandpackLayout>[m
+[31m-      {activeTab=='code'?<>[m
+[31m-      <SandpackFileExplorer style={{height:'80vh'}}/>[m
+[31m-      <SandpackCodeEditor style={{height:'80vh'}}/>[m
+[31m-      </>:[m
+[31m-      <>[m
+[31m-      <SandpackPreview style={{height:'80vh'}} showNavigator={true}/>[m
+[31m-    </>}[m
+[31m-    </SandpackLayout>[m
+[31m-  </SandpackProvider>[m
+[31m-        {loading && <div className='p-10 bg-gray-900  opacity-80[m
+[31m-        absolute top-0 rounded-lg w-full h-full flex items-center justify-center'>[m
+[31m-          <Loader2Icon className='animate-spin h-10 w-10 text-white'/>[m
+[31m-          <h2 className='text-white'>Generating your files...</h2>[m
+[32m+[m[32m      <SandpackProvider[m
+[32m+[m[32m        files={files}[m
+[32m+[m[32m        template="react"[m
+[32m+[m[32m        theme={'dark'}[m
+[32m+[m[32m        customSetup={{[m
+[32m+[m[32m          dependencies: {[m
+[32m+[m[32m            ...Lookup.DEPENDANCY,[m
+[32m+[m[32m          },[m
+[32m+[m[32m        }}[m
+[32m+[m[32m        options={{ externalResources: ['https://cdn.tailwindcss.com'] }}[m
+[32m+[m[32m      >[m
+[32m+[m[32m        <SandpackLayout>[m
+[32m+[m[32m          {activeTab == 'code' ? ([m
+[32m+[m[32m            <>[m
+[32m+[m[32m              <SandpackFileExplorer style={{ height: '80vh' }} />[m
+[32m+[m[32m              <SandpackCodeEditor style={{ height: '80vh' }} />[m
+[32m+[m[32m            </>[m
+[32m+[m[32m          ) : ([m
+[32m+[m[32m            <>[m
+[32m+[m[32m              <SandpackPreviewClient />[m
+[32m+[m[32m            </>[m
+[32m+[m[32m          )}[m
+[32m+[m[32m        </SandpackLayout>[m
+[32m+[m[32m      </SandpackProvider>[m
+[32m+[m
+[32m+[m[32m      {loading && ([m
+[32m+[m[32m        <div className="p-10 bg-gray-900 bg-opacity-80 absolute top-0 w-full h-full flex justify-center items-center">[m
+[32m+[m[32m          <Loader2Icon className="animate-spin w-10 h-10 text-white" />[m
+[32m+[m[32m          <h2>Generating your files...</h2>[m
+         </div>[m
+[31m-        }[m
+[32m+[m[32m      )}[m
+     </div>[m
+[31m-  )[m
+[32m+[m[32m  );[m
+ }[m
+ [m
+[31m-export default CodeView[m
+\ No newline at end of file[m
+[32m+[m[32mexport default CodeView;[m
+\ No newline at end of file[m
+[1mdiff --git a/bolt_new_clone/components/custom/Header.jsx b/bolt_new_clone/components/custom/Header.jsx[m
+[1mindex 439e9ae..ab27e13 100644[m
+[1m--- a/bolt_new_clone/components/custom/Header.jsx[m
+[1m+++ b/bolt_new_clone/components/custom/Header.jsx[m
+[36m@@ -1,31 +1,80 @@[m
+[32m+[m[32m'use client';[m
+ import Image from 'next/image';[m
+ import React, { useContext } from 'react';[m
+ import { Button } from '../ui/button';[m
+ import Colors from '@/data/Colors';[m
+ import { UserDetailContext } from '@/context/UserDetailContext';[m
+[32m+[m[32mimport Link from 'next/link';[m
+[32m+[m[32mimport { Download, Rocket } from 'lucide-react';[m
+[32m+[m[32mimport { useSidebar } from '../ui/sidebar';[m
+[32m+[m[32mimport { usePathname } from 'next/navigation';[m
+[32m+[m[32mimport { ActionContext } from '@/context/ActionContext';[m
+ [m
+ function Header() {[m
+[31m-  const { userDetail = {}, setUserDetail } = useContext(UserDetailContext); // Provide a default value[m
+[32m+[m[32m  const { userDetail, setUserDetail } = useContext(UserDetailContext);[m
+[32m+[m[32m  const { action, setAction } = useContext(ActionContext);[m
+[32m+[m[32m  const { toggleSidebar } = useSidebar();[m
+[32m+[m[32m  const pathname = usePathname();[m
+[32m+[m[32m  const onActionBtn =(actn) => {[m
+[32m+[m[32m    setAction({[m
+[32m+[m[32m      actionType: actn,[m
+[32m+[m[32m      timeStamp: Date.now()[m
+[32m+[m[32m    })[m
+ [m
+[32m+[m[32m  }[m
+   return ([m
+[31m-    <div className='p-4 flex justify-between items-center'>[m
+[31m-      <Image src={'/logo.png'} alt='Logo' width={40} height={40} />[m
+[31m-      {!userDetail.name && ([m
+[31m-        <div className='flex gap-5'>[m
+[32m+[m[32m    <div className="p-4 flex justify-between items-center">[m
+[32m+[m[32m            {/* Logo and SnapSite text together */}[m
+[32m+[m[32m            <Link href={'/'} className="flex items-center gap-2">[m
+[32m+[m[32m        <div className="w-[40px] h-[40px] overflow-hidden rounded-full">[m
+[32m+[m[32m          <Image src="/logo2.png" alt="logo" width={40} height={40} />[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m        <div className="font-bold text-3xl">SnapSite</div>[m
+[32m+[m[32m      </Link>[m
+[32m+[m[32m      {!userDetail?.name ? ([m
+[32m+[m[32m        <div className="flex gap-5">[m
+           <Button variant="ghost">Sign In</Button>[m
+           <Button[m
+             className="text-white"[m
+[31m-            style={{ backgroundColor: Colors.BLUE }}[m
+[32m+[m[32m            style={{[m
+[32m+[m[32m              backgroundColor: Colors.BLUE,[m
+[32m+[m[32m            }}[m
+           >[m
+             Get Started[m
+           </Button>[m
+         </div>[m
+[32m+[m[32m      ) : ([m
+[32m+[m[32m        <div className="flex gap-5 items-center">[m
+[32m+[m[32m          {pathname.includes('/workspace/') && ([m
+[32m+[m[32m            <>[m
+[32m+[m[32m              <Button variant="ghost" onClick={() => onActionBtn('export')}>[m
+[32m+[m[32m                <Download /> Export[m
+[32m+[m[32m              </Button>[m
+[32m+[m[32m              <Button[m
+[32m+[m[32m                onClick={() => onActionBtn('deploy')}[m
+[32m+[m[32m                className="text-white"[m
+[32m+[m[32m                style={{[m
+[32m+[m[32m                  backgroundColor: Colors.BLUE,[m
+[32m+[m[32m                }}[m
+[32m+[m[32m              >[m
+[32m+[m[32m                <Rocket /> Deploy[m
+[32m+[m[32m              </Button>[m
+[32m+[m[32m            </>[m
+[32m+[m[32m          )}[m
+[32m+[m[32m          {userDetail && ([m
+[32m+[m[32m            <Image[m
+[32m+[m[32m              onClick={toggleSidebar}[m
+[32m+[m[32m              src={userDetail?.picture}[m
+[32m+[m[32m              alt="userImage"[m
+[32m+[m[32m              width={40}[m
+[32m+[m[32m              height={40}[m
+[32m+[m[32m              className="rounded-full cursor-pointer object-cover"[m
+[32m+[m[32m            />[m
+[32m+[m[32m          )}[m
+[32m+[m[32m        </div>[m
+       )}[m
+     </div>[m
+   );[m
+ }[m
+ [m
+[31m-export default Header;[m
+[31m-[m
+[31m-[m
+[31m-[m
+[32m+[m[32mexport default Header;[m
+\ No newline at end of file[m
+[1mdiff --git a/bolt_new_clone/components/custom/Hero.jsx b/bolt_new_clone/components/custom/Hero.jsx[m
+[1mindex 8881c1f..441c81f 100644[m
+[1m--- a/bolt_new_clone/components/custom/Hero.jsx[m
+[1m+++ b/bolt_new_clone/components/custom/Hero.jsx[m
+[36m@@ -1,4 +1,5 @@[m
+ "use client"[m
+[32m+[m[32mimport '@/app/globals.css';[m
+ import { MessagesContext } from '@/context/MessagesContext' [m
+ import { UserDetailContext } from '../../context/UserDetailContext';[m
+ import Colors from '@/data/Colors'[m
+[36m@@ -24,6 +25,10 @@[m [mfunction Hero() {[m
+         setOpenDialog(true);[m
+         return; [m
+       }[m
+[32m+[m[32m      if(userDetail?.token<10){[m
+[32m+[m[32m        toast('You do not have enough token!');[m
+[32m+[m[32m          return ;[m
+[32m+[m[32m    }[m
+       const msg={[m
+         role:'user',[m
+         content:input[m
+[36m@@ -50,15 +55,12 @@[m [mfunction Hero() {[m
+         <div className='flex gap-2'>[m
+           <textarea placeholder={Lookup.INPUT_PLACEHOLDER}[m
+           onChange={(event)=>setUserInput(event.target.value)}[m
+[31m-          className='outline-none bg-transparent w-full h-32 max-h-56 resize-none'[m
+[32m+[m[32m          className='outline-none bg-transparent w-full h-32 max-h-56 resize-none '[m
+           /> [m
+          {userInput && <ArrowRight [m
+          onClick={()=>onGenerate(userInput)}[m
+          className='bg-blue-500 p-2 h-10 w-10 rounded-md cursor-pointer' />}[m
+         </div>[m
+[31m-        <div>[m
+[31m-        <Link className='h-5 w-5'/>[m
+[31m-        </div>[m
+       </div>[m
+ [m
+       <div className='flex mt-8 flex-wrap max-w-2xl items-center justify-center gap-3'>[m
+[36m@@ -76,4 +78,6 @@[m [mfunction Hero() {[m
+   )[m
+ }[m
+ [m
+[31m-export default Hero[m
+\ No newline at end of file[m
+[32m+[m[32mexport default Hero[m
+[41m+[m
+[41m+[m
+[1mdiff --git a/bolt_new_clone/components/custom/PricingModel.jsx b/bolt_new_clone/components/custom/PricingModel.jsx[m
+[1mindex 471f3d7..0514841 100644[m
+[1m--- a/bolt_new_clone/components/custom/PricingModel.jsx[m
+[1m+++ b/bolt_new_clone/components/custom/PricingModel.jsx[m
+[36m@@ -1,87 +1,65 @@[m
+ import Lookup from '@/data/Lookup';[m
+ import React, { useContext, useEffect, useState } from 'react';[m
+[31m-import { Button } from '../ui/button';[m
+ import { PayPalButtons } from '@paypal/react-paypal-js';[m
+ import { UserDetailContext } from '@/context/UserDetailContext';[m
+ import { useMutation } from 'convex/react';[m
+ import { api } from '@/convex/_generated/api';[m
+ [m
+ function PricingModel() {[m
+[31m-  const { userDetail, setUserDetail } = useContext(UserDetailContext);[m
+[32m+[m[32m  const { userDetail } = useContext(UserDetailContext);[m
+   const [selectedOption, setSelectedOption] = useState();[m
+ [m
+   const UpdateToken = useMutation(api.users.UpdateToken);[m
+[31m-  useEffect(() => {[m
+[31m-    console.log(userDetail);[m
+[31m-  }, [userDetail]);[m
+ [m
+   const onPaymentSuccess = async (pric, usr) => {[m
+[31m-    console.log(selectedOption);[m
+[31m-    console.log(pric);[m
+[31m-    console.log(usr);[m
+     const token = Number(usr?.token) + Number(pric?.value);[m
+[31m-    console.log(token);[m
+     await UpdateToken({[m
+       token: token,[m
+       userId: userDetail?._id,[m
+     });[m
+   };[m
+[32m+[m
+   return ([m
+[31m-    <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 ">[m
+[32m+[m[32m    <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">[m
+       {Lookup.PRICING_OPTIONS.map((pricing, index) => ([m
+[31m-        <div[m
+[31m-          className="flex flex-col gap-6 border rounded-xl p-10 justify-between"[m
+[31m-          key={index}[m
+[31m-        >[m
+[32m+[m[32m        <div key={index} className="border p-7 rounded-xl flex flex-col gap-3 h-full">[m
+           <h2 className="font-bold text-4xl">{pricing.name}</h2>[m
+           <h2 className="font-medium text-lg">{pricing.tokens} Tokens</h2>[m
+[31m-          <p className="text-gray-400">{pricing.desc}</p>[m
+[31m-          <h2 className="font-bold text-4xl text-center mt-6">[m
+[31m-            {pricing.price}$[m
+[31m-          </h2>[m
+[31m-          {/* <Button>Upgrade to {pricing.name}</Button>[m
+[31m-           */}[m
+[31m-          {userDetail && ([m
+[31m-            <div [m
+[31m-              onClick={() => {[m
+[31m-                setSelectedOption(pricing);[m
+[31m-                console.log(pricing);[m
+[31m-              }}[m
+[31m-            >[m
+[31m-              <PayPalButtons[m
+[31m-                style={{ layout: 'horizontal' }}[m
+[31m-                disabled={!userDetail}[m
+[31m-                onCancel={() => console.log('payment cancel')}[m
+[31m-                onClick={() => {[m
+[31m-                  setSelectedOption(pricing);[m
+[31m-                  console.log(pricing);[m
+[31m-                }}[m
+[31m-                onApprove={() => {[m
+[31m-                  setSelectedOption(pricing);[m
+[31m-                  console.log(pricing);[m
+[31m-                  let pric = pricing;[m
+[31m-                  let usr = userDetail;[m
+[31m-                  onPaymentSuccess(pric, usr);[m
+[31m-                }}[m
+[31m-                createOrder={(data, actions) => {[m
+[31m-                  return actions.order.create({[m
+[31m-                    purchase_units: [[m
+[31m-                      {[m
+[31m-                        amount: {[m
+[31m-                          value: pricing.price,[m
+[31m-                          currency_code: 'USD',[m
+[32m+[m[32m          <p className="text-gray-400 flex-grow">{pricing.desc}</p>[m
+[32m+[m
+[32m+[m[32m          {/* Pricing & PayPal button in same line */}[m
+[32m+[m[32m          <div className="mt-auto flex flex-col items-center justify-end h-full">[m
+[32m+[m[32m            <h2 className="font-bold text-4xl text-center">${pricing.price}</h2>[m
+[32m+[m[32m            {userDetail && ([m
+[32m+[m[32m              <div[m
+[32m+[m[32m                className="mt-3 w-full flex justify-center"[m
+[32m+[m[32m                onClick={() => setSelectedOption(pricing)}[m
+[32m+[m[32m              >[m
+[32m+[m[32m                <PayPalButtons[m
+[32m+[m[32m                  style={{ layout: 'horizontal' }}[m
+[32m+[m[32m                  disabled={!userDetail}[m
+[32m+[m[32m                  onCancel={() => console.log('Payment cancelled')}[m
+[32m+[m[32m                  onApprove={() => onPaymentSuccess(pricing, userDetail)}[m
+[32m+[m[32m                  createOrder={(data, actions) => {[m
+[32m+[m[32m                    return actions.order.create({[m
+[32m+[m[32m                      purchase_units: [[m
+[32m+[m[32m                        {[m
+[32m+[m[32m                          amount: {[m
+[32m+[m[32m                            value: pricing.price,[m
+[32m+[m[32m                            currency_code: 'USD',[m
+[32m+[m[32m                          },[m
+                         },[m
+[31m-                      },[m
+[31m-                    ],[m
+[31m-                  });[m
+[31m-                }}[m
+[31m-              />[m
+[31m-            </div>[m
+[31m-          )}[m
+[32m+[m[32m                      ],[m
+[32m+[m[32m                    });[m
+[32m+[m[32m                  }}[m
+[32m+[m[32m                />[m
+[32m+[m[32m              </div>[m
+[32m+[m[32m            )}[m
+[32m+[m[32m          </div>[m
+         </div>[m
+       ))}[m
+     </div>[m
+   );[m
+ }[m
+ [m
+[31m-export default PricingModel;[m
+\ No newline at end of file[m
+[32m+[m[32mexport default PricingModel;[m
+[1mdiff --git a/bolt_new_clone/components/custom/SandpackPreviewClient.jsx b/bolt_new_clone/components/custom/SandpackPreviewClient.jsx[m
+[1mnew file mode 100644[m
+[1mindex 0000000..2bc4ad2[m
+[1m--- /dev/null[m
+[1m+++ b/bolt_new_clone/components/custom/SandpackPreviewClient.jsx[m
+[36m@@ -0,0 +1,36 @@[m
+[32m+[m[32m'use client';[m
+[32m+[m[32mimport { ActionContext } from '@/context/ActionContext';[m
+[32m+[m[32mimport { SandpackPreview, useSandpack } from '@codesandbox/sandpack-react';[m
+[32m+[m[32mimport React, { useContext, useEffect, useRef } from 'react';[m
+[32m+[m
+[32m+[m[32mfunction SandpackPreviewClient() {[m
+[32m+[m[32m  const previewRef = useRef();[m
+[32m+[m[32m  const { sandpack } = useSandpack();[m
+[32m+[m[32m    const { action, setAction } = useContext(ActionContext);[m
+[32m+[m[41m  [m
+[32m+[m[32m  useEffect(() => {[m
+[32m+[m[32m    GetSandpackCleint();[m
+[32m+[m[32m  }, [sandpack&& action]);[m
+[32m+[m[32m  const GetSandpackCleint = async () => {[m
+[32m+[m[32m    const client = previewRef.current?.getClient();[m
+[32m+[m[32m    if (client) {[m
+[32m+[m[32m      console.log(client);[m
+[32m+[m[32m      const result = await client.getCodeSandboxURL();[m
+[32m+[m[32m      if(action?.actionType == "deploy") {[m
+[32m+[m[32m        window.open('https://' + result?.sandboxId + ".csb.app/")[m
+[32m+[m[32m      } else if(action?.actionType == "export") {[m
+[32m+[m[32m        window?.open(result?.editorUrl)[m
+[32m+[m[32m      }[m
+[32m+[m[32m    }[m
+[32m+[m[32m  };[m
+[32m+[m
+[32m+[m[32m  return ([m
+[32m+[m[32m    <SandpackPreview[m
+[32m+[m[32m      ref={previewRef}[m
+[32m+[m[32m      showNavigator={true}[m
+[32m+[m[32m      style={{ height: '80vh' }}[m
+[32m+[m[32m    />[m
+[32m+[m[32m  );[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mexport default SandpackPreviewClient;[m
+\ No newline at end of file[m
+[1mdiff --git a/bolt_new_clone/components/custom/SideBarFooter.jsx b/bolt_new_clone/components/custom/SideBarFooter.jsx[m
+[1mindex 252c5c4..dc04230 100644[m
+[1m--- a/bolt_new_clone/components/custom/SideBarFooter.jsx[m
+[1m+++ b/bolt_new_clone/components/custom/SideBarFooter.jsx[m
+[36m@@ -27,17 +27,19 @@[m [mfunction SideBarFooter() {[m
+   ];[m
+   const onOptionClock = (option) => {[m
+     console.log(option);[m
+[31m-    router.push(option.path);[m
+[32m+[m[32m    if (option.path) {[m
+[32m+[m[32m      router.push(option.path);[m
+[32m+[m[32m    }[m
+   };[m
+ [m
+   return ([m
+[31m-    <div className="p-2 mb-10">[m
+[32m+[m[32m    <div className="mb-2">[m
+       {options.map((option, index) => ([m
+         <Button[m
+           onClick={() => onOptionClock(option)}[m
+           key={index}[m
+           variant="ghost"[m
+[31m-          className="w-full flex justify-start my-3"[m
+[32m+[m[32m          className="w-full flex justify-start"[m
+         >[m
+           <option.icon />[m
+           {option.name}[m
+[1mdiff --git a/bolt_new_clone/components/custom/WorkspaceHistory.jsx b/bolt_new_clone/components/custom/WorkspaceHistory.jsx[m
+[1mindex 1d1db2c..b59397c 100644[m
+[1m--- a/bolt_new_clone/components/custom/WorkspaceHistory.jsx[m
+[1m+++ b/bolt_new_clone/components/custom/WorkspaceHistory.jsx[m
+[36m@@ -4,7 +4,7 @@[m [mimport { api } from '@/convex/_generated/api';[m
+ import { useConvex } from 'convex/react';[m
+ import Link from 'next/link';[m
+ import React, { useContext, useEffect, useState } from 'react';[m
+[31m-import { useSidebar } from '../ui/sidebar';[m
+[32m+[m[32mimport { useSidebar } from '@/components/ui/sidebar';[m
+ [m
+ function WorkspaceHistory() {[m
+   const { userDetail, setUserDetail } = useContext(UserDetailContext);[m
+[1mdiff --git a/bolt_new_clone/components/ui/sidebar.jsx b/bolt_new_clone/components/ui/sidebar.jsx[m
+[1mindex 840bed7..70a28e2 100644[m
+[1m--- a/bolt_new_clone/components/ui/sidebar.jsx[m
+[1m+++ b/bolt_new_clone/components/ui/sidebar.jsx[m
+[36m@@ -38,7 +38,7 @@[m [mfunction useSidebar() {[m
+ [m
+ const SidebarProvider = React.forwardRef(([m
+   {[m
+[31m-    defaultOpen = true,[m
+[32m+[m[32m    defaultOpen = false,[m
+     open: openProp,[m
+     onOpenChange: setOpenProp,[m
+     className,[m
+[36m@@ -132,28 +132,18 @@[m [mSidebarProvider.displayName = "SidebarProvider"[m
+ const Sidebar = React.forwardRef(([m
+   {[m
+     side = "left",[m
+[31m-    variant = "sidebar",[m
+[31m-    collapsible = "offcanvas",[m
+[32m+[m[32m    variant = "overlay",[m
+[32m+[m[32m    collapsible = "none",[m
+     className,[m
+     children,[m
+     ...props[m
+   },[m
+   ref[m
+ ) => {[m
+[31m-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()[m
+[32m+[m[32m  const { isMobile, state, openMobile, setOpenMobile, setOpen } = useSidebar();[m
+ [m
+   if (collapsible === "none") {[m
+[31m-    return ([m
+[31m-      (<div[m
+[31m-        className={cn([m
+[31m-          "flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground",[m
+[31m-          className[m
+[31m-        )}[m
+[31m-        ref={ref}[m
+[31m-        {...props}>[m
+[31m-        {children}[m
+[31m-      </div>)[m
+[31m-    );[m
+[32m+[m[32m    //No changes needed here, so no need to show this part of code[m
+   }[m
+ [m
+   if (isMobile) {[m
+[36m@@ -176,46 +166,35 @@[m [mconst Sidebar = React.forwardRef(([m
+   }[m
+ [m
+   return ([m
+[31m-    (<div[m
+[31m-      ref={ref}[m
+[31m-      className="group peer hidden text-sidebar-foreground md:block"[m
+[31m-      data-state={state}[m
+[31m-      data-collapsible={state === "collapsed" ? collapsible : ""}[m
+[31m-      data-variant={variant}[m
+[31m-      data-side={side}>[m
+[31m-      {/* This is what handles the sidebar gap on desktop */}[m
+[31m-      <div[m
+[31m-        className={cn([m
+[31m-          "relative h-svh w-[--sidebar-width] bg-transparent transition-[width] duration-200 ease-linear",[m
+[31m-          "group-data-[collapsible=offcanvas]:w-0",[m
+[31m-          "group-data-[side=right]:rotate-180",[m
+[31m-          variant === "floating" || variant === "inset"[m
+[31m-            ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"[m
+[31m-            : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"[m
+[31m-        )} />[m
+[32m+[m[32m    <>[m
+[32m+[m[32m      {/* Overlay (backdrop) */}[m
+[32m+[m[32m      {state === "expanded" && ([m
+[32m+[m[32m        <div[m
+[32m+[m[32m          className="fixed inset-0 z-20 bg-black/20 transition-opacity duration-200 md:block" // Removed backdrop-blur-sm[m
+[32m+[m[32m          onClick={() => setOpen(false)}[m
+[32m+[m[32m        />[m
+[32m+[m[32m      )}[m
+[32m+[m
+       <div[m
+[32m+[m[32m        ref={ref}[m
+         className={cn([m
+[31m-          "fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex",[m
+[31m-          side === "left"[m
+[31m-            ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"[m
+[31m-            : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",[m
+[31m-          // Adjust the padding for floating and inset variants.[m
+[31m-          variant === "floating" || variant === "inset"[m
+[31m-            ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]"[m
+[31m-            : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",[m
+[32m+[m[32m          "fixed top-0 left-0 h-screen w-[--sidebar-width] bg-sidebar text-sidebar-foreground z-30 transition-transform duration-300 ease-in-out md:block",[m
+[32m+[m[32m          state === "expanded" ? "translate-x-0" : "-translate-x-full",[m
+[32m+[m[32m          "shadow-lg",[m
+           className[m
+         )}[m
+[31m-        {...props}>[m
+[31m-        <div[m
+[31m-          data-sidebar="sidebar"[m
+[31m-          className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow">[m
+[31m-          {children}[m
+[31m-        </div>[m
+[32m+[m[32m        data-state={state}[m
+[32m+[m[32m        data-variant={variant}[m
+[32m+[m[32m        data-side={side}[m
+[32m+[m[32m        {...props}[m
+[32m+[m[32m      >[m
+[32m+[m[32m        <div className="flex h-full flex-col">{children}</div>[m
+       </div>[m
+[31m-    </div>)[m
+[32m+[m[32m    </>[m
+   );[m
+[31m-})[m
+[31m-Sidebar.displayName = "Sidebar"[m
+[32m+[m[32m});[m
+[32m+[m
+[32m+[m[32mSidebar.displayName = "Sidebar";[m
+ [m
+ const SidebarTrigger = React.forwardRef(({ className, onClick, ...props }, ref) => {[m
+   const { toggleSidebar } = useSidebar()[m
+[36m@@ -241,7 +220,6 @@[m [mSidebarTrigger.displayName = "SidebarTrigger"[m
+ [m
+ const SidebarRail = React.forwardRef(({ className, ...props }, ref) => {[m
+   const { toggleSidebar } = useSidebar()[m
+[31m-[m
+   return ([m
+     (<button[m
+       ref={ref}[m
+[36m@@ -462,9 +440,7 @@[m [mconst SidebarMenuButton = React.forwardRef(([m
+ [m
+   if (!tooltip) {[m
+     return button[m
+[31m-  }[m
+[31m-[m
+[31m-  if (typeof tooltip === "string") {[m
+[32m+[m[32m  } else if (typeof tooltip === "string") {[m
+     tooltip = {[m
+       children: tooltip,[m
+     }[m
+[36m@@ -491,15 +467,8 @@[m [mconst SidebarMenuAction = React.forwardRef(({ className, asChild = false, showOn[m
+       ref={ref}[m
+       data-sidebar="menu-action"[m
+       className={cn([m
+[31m-        "absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0",[m
+[31m-        // Increases the hit area of the button on mobile.[m
+[31m-        "after:absolute after:-inset-2 after:md:hidden",[m
+[31m-        "peer-data-[size=sm]/menu-button:top-1",[m
+[31m-        "peer-data-[size=default]/menu-button:top-1.5",[m
+[31m-        "peer-data-[size=lg]/menu-button:top-2.5",[m
+[31m-        "group-data-[collapsible=icon]:hidden",[m
+[31m-        showOnHover &&[m
+[31m-          "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0",[m
+[32m+[m[32m        "absolute right-1.5 top-1.5 flex aspect-square h-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-3 [&>svg]:shrink-0",[m
+[32m+[m[32m        showOnHover ? "opacity-0 group-hover/menu-item:opacity-100" : "",[m
+         className[m
+       )}[m
+       {...props} />)[m
+[36m@@ -507,114 +476,25 @@[m [mconst SidebarMenuAction = React.forwardRef(({ className, asChild = false, showOn[m
+ })[m
+ SidebarMenuAction.displayName = "SidebarMenuAction"[m
+ [m
+[31m-const SidebarMenuBadge = React.forwardRef(({ className, ...props }, ref) => ([m
+[31m-  <div[m
+[31m-    ref={ref}[m
+[31m-    data-sidebar="menu-badge"[m
+[31m-    className={cn([m
+[31m-      "pointer-events-none absolute right-1 flex h-5 min-w-5 select-none items-center justify-center rounded-md px-1 text-xs font-medium tabular-nums text-sidebar-foreground",[m
+[31m-      "peer-hover/menu-button:text-sidebar-accent-foreground peer-data-[active=true]/menu-button:text-sidebar-accent-foreground",[m
+[31m-      "peer-data-[size=sm]/menu-button:top-1",[m
+[31m-      "peer-data-[size=default]/menu-button:top-1.5",[m
+[31m-      "peer-data-[size=lg]/menu-button:top-2.5",[m
+[31m-      "group-data-[collapsible=icon]:hidden",[m
+[31m-      className[m
+[31m-    )}[m
+[31m-    {...props} />[m
+[31m-))[m
+[31m-SidebarMenuBadge.displayName = "SidebarMenuBadge"[m
+[31m-[m
+[31m-const SidebarMenuSkeleton = React.forwardRef(({ className, showIcon = false, ...props }, ref) => {[m
+[31m-  // Random width between 50 to 90%.[m
+[31m-  const width = React.useMemo(() => {[m
+[31m-    return `${Math.floor(Math.random() * 40) + 50}%`;[m
+[31m-  }, [])[m
+[31m-[m
+[31m-  return ([m
+[31m-    (<div[m
+[31m-      ref={ref}[m
+[31m-      data-sidebar="menu-skeleton"[m
+[31m-      className={cn("flex h-8 items-center gap-2 rounded-md px-2", className)}[m
+[31m-      {...props}>[m
+[31m-      {showIcon && ([m
+[31m-        <Skeleton className="size-4 rounded-md" data-sidebar="menu-skeleton-icon" />[m
+[31m-      )}[m
+[31m-      <Skeleton[m
+[31m-        className="h-4 max-w-[--skeleton-width] flex-1"[m
+[31m-        data-sidebar="menu-skeleton-text"[m
+[31m-        style={[m
+[31m-          {[m
+[31m-            "--skeleton-width": width[m
+[31m-          }[m
+[31m-        } />[m
+[31m-    </div>)[m
+[31m-  );[m
+[31m-})[m
+[31m-SidebarMenuSkeleton.displayName = "SidebarMenuSkeleton"[m
+[31m-[m
+[31m-const SidebarMenuSub = React.forwardRef(({ className, ...props }, ref) => ([m
+[31m-  <ul[m
+[31m-    ref={ref}[m
+[31m-    data-sidebar="menu-sub"[m
+[31m-    className={cn([m
+[31m-      "mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5",[m
+[31m-      "group-data-[collapsible=icon]:hidden",[m
+[31m-      className[m
+[31m-    )}[m
+[31m-    {...props} />[m
+[31m-))[m
+[31m-SidebarMenuSub.displayName = "SidebarMenuSub"[m
+[31m-[m
+[31m-const SidebarMenuSubItem = React.forwardRef(({ ...props }, ref) => <li ref={ref} {...props} />)[m
+[31m-SidebarMenuSubItem.displayName = "SidebarMenuSubItem"[m
+[31m-[m
+[31m-const SidebarMenuSubButton = React.forwardRef([m
+[31m-  ({ asChild = false, size = "md", isActive, className, ...props }, ref) => {[m
+[31m-    const Comp = asChild ? Slot : "a"[m
+[31m-[m
+[31m-    return ([m
+[31m-      (<Comp[m
+[31m-        ref={ref}[m
+[31m-        data-sidebar="menu-sub-button"[m
+[31m-        data-size={size}[m
+[31m-        data-active={isActive}[m
+[31m-        className={cn([m
+[31m-          "flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground",[m
+[31m-          "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",[m
+[31m-          size === "sm" && "text-xs",[m
+[31m-          size === "md" && "text-sm",[m
+[31m-          "group-data-[collapsible=icon]:hidden",[m
+[31m-          className[m
+[31m-        )}[m
+[31m-        {...props} />)[m
+[31m-    );[m
+[31m-  }[m
+[31m-)[m
+[31m-SidebarMenuSubButton.displayName = "SidebarMenuSubButton"[m
+[31m-[m
+ export {[m
+[32m+[m[32m  SidebarProvider,[m
+   Sidebar,[m
+[31m-  SidebarContent,[m
+[32m+[m[32m  SidebarTrigger,[m
+[32m+[m[32m  SidebarRail,[m
+[32m+[m[32m  SidebarInset,[m
+[32m+[m[32m  SidebarInput,[m
+[32m+[m[32m  SidebarHeader,[m
+   SidebarFooter,[m
+[32m+[m[32m  SidebarSeparator,[m
+[32m+[m[32m  SidebarContent,[m
+   SidebarGroup,[m
+[32m+[m[32m  SidebarGroupLabel,[m
+   SidebarGroupAction,[m
+   SidebarGroupContent,[m
+[31m-  SidebarGroupLabel,[m
+[31m-  SidebarHeader,[m
+[31m-  SidebarInput,[m
+[31m-  SidebarInset,[m
+   SidebarMenu,[m
+[31m-  SidebarMenuAction,[m
+[31m-  SidebarMenuBadge,[m
+[31m-  SidebarMenuButton,[m
+   SidebarMenuItem,[m
+[31m-  SidebarMenuSkeleton,[m
+[31m-  SidebarMenuSub,[m
+[31m-  SidebarMenuSubButton,[m
+[31m-  SidebarMenuSubItem,[m
+[31m-  SidebarProvider,[m
+[31m-  SidebarRail,[m
+[31m-  SidebarSeparator,[m
+[31m-  SidebarTrigger,[m
+[32m+[m[32m  SidebarMenuButton,[m
+[32m+[m[32m  SidebarMenuAction,[m
+   useSidebar,[m
+ }[m
+[41m+[m
+[1mdiff --git a/bolt_new_clone/components/ui/sonner.jsx b/bolt_new_clone/components/ui/sonner.jsx[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bd51a92[m
+[1m--- /dev/null[m
+[1m+++ b/bolt_new_clone/components/ui/sonner.jsx[m
+[36m@@ -0,0 +1,29 @@[m
+[32m+[m[32m"use client";[m
+[32m+[m[32mimport { useTheme } from "next-themes"[m
+[32m+[m[32mimport { Toaster as Sonner } from "sonner"[m
+[32m+[m
+[32m+[m[32mconst Toaster = ({[m
+[32m+[m[32m  ...props[m
+[32m+[m[32m}) => {[m
+[32m+[m[32m  const { theme = "system" } = useTheme()[m
+[32m+[m
+[32m+[m[32m  return ([m
+[32m+[m[32m    (<Sonner[m
+[32m+[m[32m      theme={theme}[m
+[32m+[m[32m      className="toaster group"[m
+[32m+[m[32m      toastOptions={{[m
+[32m+[m[32m        classNames: {[m
+[32m+[m[32m          toast:[m
+[32m+[m[32m            "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",[m
+[32m+[m[32m          description: "group-[.toast]:text-muted-foreground",[m
+[32m+[m[32m          actionButton:[m
+[32m+[m[32m            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",[m
+[32m+[m[32m          cancelButton:[m
+[32m+[m[32m            "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",[m
+[32m+[m[32m        },[m
+[32m+[m[32m      }}[m
+[32m+[m[32m      {...props} />)[m
+[32m+[m[32m  );[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mexport { Toaster }[m
+[1mdiff --git a/bolt_new_clone/context/ActionContext.jsx b/bolt_new_clone/context/ActionContext.jsx[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f9530ec[m
+[1m--- /dev/null[m
+[1m+++ b/bolt_new_clone/context/ActionContext.jsx[m
+[36m@@ -0,0 +1,4 @@[m
+[32m+[m[32mimport { createContext } from "react";[m
+[32m+[m
+[32m+[m
+[32m+[m[32mexport const ActionContext = createContext();[m
+[1mdiff --git a/bolt_new_clone/data/Lookup.jsx b/bolt_new_clone/data/Lookup.jsx[m
+[1mindex 40c5321..32ab069 100644[m
+[1m--- a/bolt_new_clone/data/Lookup.jsx[m
+[1m+++ b/bolt_new_clone/data/Lookup.jsx[m
+[36m@@ -5,9 +5,9 @@[m [mexport default {[m
+   HERO_HEADING: 'What do you want to build?',[m
+   HERO_DESC: 'Prompt, run, edit, and deploy full-stack web apps.',[m
+   INPUT_PLACEHOLDER: 'What you want to build?',[m
+[31m-  SIGNIN_HEADING: 'Continue With Bolt.New 2.0',[m
+[31m-  SIGNIN_SUBHEADING: 'To use Bolt you must log into an existing account or create one.',[m
+[31m-  SIGNIn_AGREEMENT_TEXT: 'By using Bolt, you agree to the collection of usage data for analytics.',[m
+[32m+[m[32m  SIGNIN_HEADING: 'Continue With SnapSite',[m
+[32m+[m[32m  SIGNIN_SUBHEADING: 'To use SnapSite you must log into an existing account or create one.',[m
+[32m+[m[32m  SIGNIn_AGREEMENT_TEXT: 'By using SnapSite, you agree to the collection of usage data for analytics.',[m
+ [m
+ [m
+   DEFAULT_FILE: {[m
+[36m@@ -85,21 +85,21 @@[m [mexport default config;[m
+       name:'Starter',[m
+       tokens:'120K',[m
+       value:120000,[m
+[31m-      desc:'Designed for professionals who need to use Bolt a few times per week.',[m
+[32m+[m[32m      desc:'Designed for professionals who need to use SnapSite a few times per week.',[m
+       price:9.99[m
+     },[m
+     {[m
+       name:'Pro',[m
+       tokens:'2.5M',[m
+       value:2500000,[m
+[31m-      desc:'Designed for professionals who need to use Bolt a few times per week.',[m
+[32m+[m[32m      desc:'Designed for professionals who need to use SnapSite a few times per week.',[m
+       price:19.99[m
+     },[m
+     {[m
+[31m-      name:'Unlimted (License)',[m
+[32m+[m[32m      name:'Unlimited (License)',[m
+       tokens:'Unmited',[m
+       value:999999999,[m
+[31m-      desc:'Designed for professionals who need to use Bolt a few times per week.',[m
+[32m+[m[32m      desc:'Designed for professionals who need to use SnapSite a few times per week.',[m
+       price:49.99[m
+     }[m
+   ][m
+[1mdiff --git a/bolt_new_clone/package-lock.json b/bolt_new_clone/package-lock.json[m
+[1mindex 3a8f53d..ba38c0c 100644[m
+[1m--- a/bolt_new_clone/package-lock.json[m
+[1m+++ b/bolt_new_clone/package-lock.json[m
+[36m@@ -26,6 +26,7 @@[m
+         "react": "^18.0.0",[m
+         "react-dom": "^18.0.0",[m
+         "react-markdown": "^9.0.3",[m
+[32m+[m[32m        "sonner": "^1.7.4",[m
+         "tailwind-merge": "^3.0.1",[m
+         "tailwind-scrollbar-hide": "^2.0.0",[m
+         "tailwindcss-animate": "^1.0.7",[m
+[36m@@ -4665,6 +4666,16 @@[m
+         "is-arrayish": "^0.3.1"[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/sonner": {[m
+[32m+[m[32m      "version": "1.7.4",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/sonner/-/sonner-1.7.4.tgz",[m
+[32m+[m[32m      "integrity": "sha512-DIS8z4PfJRbIyfVFDVnK9rO3eYDtse4Omcm6bt0oEr5/jtLgysmjuBl1frJ9E/EQZrFmKx2A8m/s5s9CRXIzhw==",[m
+[32m+[m[32m      "license": "MIT",[m
+[32m+[m[32m      "peerDependencies": {[m
+[32m+[m[32m        "react": "^18.0.0 || ^19.0.0 || ^19.0.0-rc",[m
+[32m+[m[32m        "react-dom": "^18.0.0 || ^19.0.0 || ^19.0.0-rc"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+     "node_modules/source-map-js": {[m
+       "version": "1.2.1",[m
+       "resolved": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz",[m
+[1mdiff --git a/bolt_new_clone/package.json b/bolt_new_clone/package.json[m
+[1mindex 87a0c88..6fe7665 100644[m
+[1m--- a/bolt_new_clone/package.json[m
+[1m+++ b/bolt_new_clone/package.json[m
+[36m@@ -27,6 +27,7 @@[m
+     "react": "^18.0.0",[m
+     "react-dom": "^18.0.0",[m
+     "react-markdown": "^9.0.3",[m
+[32m+[m[32m    "sonner": "^1.7.4",[m
+     "tailwind-merge": "^3.0.1",[m
+     "tailwind-scrollbar-hide": "^2.0.0",[m
+     "tailwindcss-animate": "^1.0.7",[m
+[1mdiff --git a/bolt_new_clone/public/logo2.png b/bolt_new_clone/public/logo2.png[m
+[1mnew file mode 100644[m
+[1mindex 0000000..eb57a6d[m
+Binary files /dev/null and b/bolt_new_clone/public/logo2.png differ
