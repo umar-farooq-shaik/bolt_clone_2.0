@@ -19,7 +19,8 @@ export const CreateUser=mutation({
                 name:args.name,
                 picture:args.picture,
                 email:args.email,
-                uid:args.uid
+                uid:args.uid,
+                token:50000
         });
             console.log(result);
         }
@@ -36,3 +37,17 @@ export const GetUser=query({
         return user[0]; 
     }
 })
+
+
+export const UpdateToken = mutation({
+    args: {
+      token: v.number(),
+      userId: v.id('users'),
+    },
+    handler: async (ctx, args) => {
+      const result = await ctx.db.patch(args.userId, {
+        token: args.token
+      });
+      return result;
+    }
+  })

@@ -14,6 +14,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useSidebar } from '../ui/sidebar';
 
+export const countToken = (inputText) => {
+  return inputText.trim().split('/\s+/').filter(word=>word).length;
+};
 
 function ChatView() {
   const { id } = useParams();
@@ -24,7 +27,7 @@ function ChatView() {
   const [loading, setLoading] = useState(false);
   const UpdateMessages = useMutation(api.workspace.UpdateMessages);
   const { toggleSidebar } = useSidebar();
-
+  const UpdateTokens=useMutation(api.users.UpdateToken);
   useEffect(() => {
     id && GetWorkspaceData();
   }, [id]);
@@ -63,13 +66,18 @@ function ChatView() {
     };
     setMessages((prev) => [...prev, aiResp]);
     
-    // update token to database
-
+    
     await UpdateMessages({
       messages: [...messages, aiResp],
       workspaceId: id,
     });
-
+    
+    const token =Number(userDetail?.token)-Number(countToken(JSON.stringify(aiResp)));
+    // update token to database
+    await UpdateTokens({
+      userId:userDetail?._id,
+      token:token
+    })
     setLoading(false);
   };
 

@@ -6,7 +6,8 @@ export default defineSchema({
         name:v.string(),
         email:v.string(),
         picture:v.string(),
-        uid:v.string()
+        uid:v.string(),
+        token:v.optional(v.number())
     }),
     workspace:defineTable({
         messages:v.any(), //JSON OBJECT
